@@ -183,6 +183,7 @@ int main(int argc, char *argv[])
 			sav = fopen(e.name, "wb");
 			fwrite(buffer, e.length, 1, sav);
 			fclose(sav);
+			free(buffer);
 		}
 		else if (argc == 2 && !(e.nameLength == 1 && e.name[0] == '.')) // the first item is usually the current directory
 		{
@@ -201,7 +202,7 @@ end:
 		fclose(out);
 	}
 
-	return 0;
+	return r;
 
 error:
 	r = 1;
