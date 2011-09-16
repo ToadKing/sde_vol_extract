@@ -71,12 +71,13 @@ typedef struct _entry entry;
 
 int main(int argc, char *argv[])
 {
-	FILE *f;
-	FILE *out;
+	FILE *f = NULL;
+	FILE *out = NULL;
 	u32 i;
 	u32 offset;
 	u32 count;
 	entry *entries;
+	int r = 0;
 
 	if (argc > 2)
 	{
@@ -85,16 +86,15 @@ int main(int argc, char *argv[])
 		if (f == NULL)
 		{
 			printf("file can't be opened\n");
-			return 1;
+			goto error;
 		}
 
 		out = fopen(argv[2], "w");
 
 		if (out == NULL)
 		{
-			fclose(f);
 			printf("log can't be opened for writin\n");
-			return 1;
+			goto error;
 		}
 	}
 	else if (argc > 1)
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 		if (f == NULL)
 		{
 			printf("file can't be opened\n");
-			return 1;
+			goto error;
 		}
 
 		out = stdout;
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		printf("usage: %s file.vol [log.txt]\n(files are not dumped if log is enabled)\n", argv[0]);
-		return 1;
+		goto error;
 	}
 
 	fread(&offset, 4, 1, f);
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
 	if (offset == 0x4C4F5650 /* "PVOL" */)
 	{
 		printf("this looks like a PVOL file, try a program that supports other .vol files\n");
-		return 1;
+		goto error;
 	}
 
 	fprintf(out, "offset:     0x%08X\n", offset);
@@ -129,6 +129,7 @@ int main(int argc, char *argv[])
 	if (fread(&count, 4, 1, f) != 1)
 	{
 		printf("file incorrect format\n");
+		goto error;
 	}
 
 	fprintf(out, "count:      0x%08X\n", count);
@@ -189,8 +190,20 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	fclose(f);
-	fclose(out);
+end:
+	if (f != NULL)
+	{
+		fclose(f);
+	}
+
+	if (out != NULL && out != stdout)
+	{
+		fclose(out);
+	}
 
 	return 0;
+
+error:
+	r = 1;
+	goto end;
 }
