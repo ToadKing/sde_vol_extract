@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
 	{
 		char *newname;
 
-		entry e = entries[0];
+		entry e = entries[i];
 
 		if (fread(&e, 0x1a, 1, f) != 1)
 		{
