@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
 		if (e.type == VOL_TYPE_FILE && argc == 2)
 		{
 			int currPos = ftell(f);
-			u8 *buffer = malloc(sizeof(u8) * e.length);
+			u8 *buffer = malloc(e.length);
 			FILE *sav;
 			fseek(f, e.offset + 0x04, SEEK_SET);
 			fread(buffer, e.length, 1, f);
